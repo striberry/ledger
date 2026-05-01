@@ -105,6 +105,3 @@ $ ledger history
 ────────────────────────
    1  done    buy groceries
 ```
-
-# Repology Coverage
-[![Packaging status](https://repology.org/badge/vertical-allrepos/ledger-cli.svg)](https://repology.org/project/ledger-cli/versions)
