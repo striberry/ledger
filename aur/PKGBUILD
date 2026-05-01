@@ -1,6 +1,6 @@
 # Maintainer: stribes <stribes@tutanota.de>
 pkgname=ledger-cli
-pkgver=0.1.0
+pkgver=1.0.0
 pkgrel=1
 pkgdesc="A lightweight local CLI task tracker"
 arch=('x86_64' 'aarch64')
