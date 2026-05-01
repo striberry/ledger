@@ -14,14 +14,14 @@ env:
 
 jobs:
   guard:
-    name: Verify tag is on prod
+    name: Verify tag is on main
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fail if not on prod
-        run: git merge-base --is-ancestor "${{ github.sha }}" origin/prod
+      - name: Fail if not on main
+        run: git merge-base --is-ancestor "${{ github.sha }}" origin/main
 
   build:
     name: Build — ${{ matrix.target }}
@@ -129,12 +129,29 @@ jobs:
           sed -i "s/^pkgver=.*/pkgver=${{ steps.src.outputs.version }}/" aur/PKGBUILD
           sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.src.outputs.sha }}')/" aur/PKGBUILD
 
-      - name: Deploy
-        uses: KSXGitHub/github-actions-deploy-aur@v2
-        with:
-          pkgname: ledger-cli
-          pkgbuild: ./aur/PKGBUILD
-          commit_username: ${{ secrets.AUR_USERNAME }}
-          commit_email: ${{ secrets.AUR_EMAIL }}
-          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
-          commit_message: Update to ${{ github.ref_name }}
+      - name: Generate .SRCINFO
+        run: |
+          docker run --rm -v "$PWD/aur:/pkg" archlinux:latest bash -c "
+            pacman -Sy --noconfirm base-devel &>/dev/null
+            useradd builder
+            chown -R builder /pkg
+            su builder -c 'cd /pkg && makepkg --printsrcinfo > .SRCINFO'
+          "
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AUR_SSH_KEY }}" | install -m 600 /dev/stdin ~/.ssh/aur
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+          printf 'Host aur.archlinux.org\n  IdentityFile ~/.ssh/aur\n  User aur\n' >> ~/.ssh/config
+
+      - name: Push to AUR
+        run: |
+          git config --global user.name  "${{ secrets.AUR_USERNAME }}"
+          git config --global user.email "${{ secrets.AUR_EMAIL }}"
+          git clone ssh://aur@aur.archlinux.org/ledger-cli.git /tmp/aur
+          cp aur/PKGBUILD aur/.SRCINFO /tmp/aur/
+          cd /tmp/aur
+          git add PKGBUILD .SRCINFO
+          git diff --cached --quiet || git commit -m "Update to ${{ github.ref_name }}"
+          git push
