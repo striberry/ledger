@@ -1,4 +1,5 @@
 mod core;
+mod storage;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
