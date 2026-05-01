@@ -13,8 +13,19 @@ env:
   BIN: ledger
 
 jobs:
+  guard:
+    name: Verify tag is on main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if not on main
+        run: git merge-base --is-ancestor "${{ github.sha }}" origin/main
+
   build:
-    name: Build - ${{ matrix.target }}
+    name: Build — ${{ matrix.target }}
+    needs: guard
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
