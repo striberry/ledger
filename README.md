@@ -12,6 +12,7 @@ A minimal command-line task tracker. Stores everything locally in `~/.ledger/led
 ## Linux
 
 **Package Manager (Repology)**
+
 [![Packaging status](https://repology.org/badge/vertical-allrepos/ledger-cli.svg)](https://repology.org/project/ledger-cli/versions)
 
 **Pre-built binary**
