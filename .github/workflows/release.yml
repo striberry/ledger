@@ -14,14 +14,14 @@ env:
 
 jobs:
   guard:
-    name: Verify tag is on main
+    name: Verify tag is on prod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fail if not on main
-        run: git merge-base --is-ancestor "${{ github.sha }}" origin/main
+      - name: Fail if not on prod
+        run: git merge-base --is-ancestor "${{ github.sha }}" origin/prod
 
   build:
     name: Build — ${{ matrix.target }}
