@@ -105,3 +105,13 @@ $ ledger history
 ────────────────────────
    1  done    buy groceries
 ```
+
+## Feature Ideas
+- [ ] Tags
+- [ ] Due Dates
+- [ ] Json Output
+- [ ] Filtering
+- [ ] Editing Tasks
+- [ ] Ledger Clearing
+- [ ] Import / Export
+- [ ] Git-friendly storage format
